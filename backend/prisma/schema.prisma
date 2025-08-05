@@ -1,0 +1,380 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  BARBER
+  CLIENT
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  CASH
+  MERCADO_PAGO
+  STRIPE
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  WHATSAPP
+  PUSH
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+// Models
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  role        UserRole @default(CLIENT)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLoginAt DateTime?
+
+  // Relations
+  profile      Profile?
+  appointments AppointmentUser[]
+  payments     Payment[]
+  reviews      Review[]
+  loyaltyPoints LoyaltyPoint[]
+  notifications Notification[]
+
+  // Audit
+  createdBy String?
+  updatedBy String?
+
+  @@map("users")
+}
+
+model Profile {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  firstName   String
+  lastName    String
+  phone       String?
+  avatar      String?
+  dateOfBirth DateTime?
+  gender      String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  preferences Json?     // JSON field for storing user preferences
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barberProfile BarberProfile?
+
+  @@map("profiles")
+}
+
+model BarberProfile {
+  id           String   @id @default(cuid())
+  profileId    String   @unique
+  bio          String?
+  experience   Int?     // years of experience
+  specialties  String[] // array of specialties
+  portfolio    String[] // array of image URLs
+  rating       Float    @default(0)
+  totalReviews Int      @default(0)
+  isAvailable  Boolean  @default(true)
+  workingHours Json?    // JSON field for working hours schedule
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  profile      Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  services     BarberService[]
+  reviews      Review[]
+
+  @@map("barber_profiles")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  duration    Int      // duration in minutes
+  basePrice   Float
+  category    String
+  isActive    Boolean  @default(true)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  barberServices BarberService[]
+  appointments   Appointment[]
+
+  @@map("services")
+}
+
+model BarberService {
+  id            String @id @default(cuid())
+  barberId      String
+  serviceId     String
+  customPrice   Float? // custom price for this barber
+  isAvailable   Boolean @default(true)
+  estimatedTime Int?   // custom time for this barber
+
+  // Relations
+  barber  BarberProfile @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  service Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([barberId, serviceId])
+  @@map("barber_services")
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  barberId      String
+  serviceId     String
+  scheduledFor  DateTime
+  duration      Int               // duration in minutes
+  totalPrice    Float
+  notes         String?
+  status        AppointmentStatus @default(SCHEDULED)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  completedAt   DateTime?
+  cancelledAt   DateTime?
+  cancelReason  String?
+
+  // Relations
+  barber       BarberProfile     @relation(fields: [barberId], references: [id])
+  service      Service           @relation(fields: [serviceId], references: [id])
+  users        AppointmentUser[]
+  payments     Payment[]
+  review       Review?
+  notifications Notification[]
+
+  @@map("appointments")
+}
+
+model AppointmentUser {
+  id            String @id @default(cuid())
+  appointmentId String
+  userId        String
+
+  // Relations
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([appointmentId, userId])
+  @@map("appointment_users")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  appointmentId   String?
+  amount          Float
+  method          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?       // external payment provider ID
+  gatewayResponse Json?         // response from payment gateway
+  processedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@map("payments")
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  userId        String
+  barberId      String
+  appointmentId String   @unique
+  rating        Int      // 1-5 stars
+  comment       String?
+  isPublic      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id])
+  barber      BarberProfile @relation(fields: [barberId], references: [id])
+  appointment Appointment   @relation(fields: [appointmentId], references: [id])
+
+  @@map("reviews")
+}
+
+model Notification {
+  id            String           @id @default(cuid())
+  userId        String
+  appointmentId String?
+  type          NotificationType
+  title         String
+  message       String
+  isRead        Boolean          @default(false)
+  sentAt        DateTime?
+  createdAt     DateTime         @default(now())
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@map("notifications")
+}
+
+model LoyaltyPoint {
+  id          String   @id @default(cuid())
+  userId      String
+  points      Int
+  reason      String   // reason for earning/spending points
+  type        String   // EARNED or SPENT
+  referenceId String?  // appointment ID or other reference
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("loyalty_points")
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  type        String         // EMAIL, SMS, WHATSAPP, PUSH
+  status      CampaignStatus @default(DRAFT)
+  targetRules Json?          // JSON rules for targeting users
+  content     Json           // campaign content (subject, body, etc.)
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("campaigns")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sku         String   @unique
+  price       Float
+  category    String
+  brand       String?
+  stock       Int      @default(0)
+  minStock    Int      @default(0)
+  isActive    Boolean  @default(true)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  stockMovements StockMovement[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  productId   String
+  type        String   // IN or OUT
+  quantity    Int
+  reason      String   // PURCHASE, SALE, ADJUSTMENT, etc.
+  referenceId String?  // reference to sale, purchase, etc.
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("stock_movements")
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   // STRING, NUMBER, BOOLEAN, JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}
+
+// Indexes for better performance
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("user_sessions")
+}
+
+// AI/ML related tables
+model UserBehavior {
+  id            String   @id @default(cuid())
+  userId        String
+  action        String   // page_view, booking_attempt, service_view, etc.
+  metadata      Json?    // additional data about the action
+  sessionId     String?
+  userAgent     String?
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  @@map("user_behavior")
+}
+
+model PredictionModel {
+  id          String   @id @default(cuid())
+  name        String
+  version     String
+  modelPath   String?  // path to the ML model file
+  isActive    Boolean  @default(false)
+  accuracy    Float?
+  parameters  Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("prediction_models")
+}

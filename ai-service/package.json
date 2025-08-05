@@ -1,0 +1,15 @@
+{
+  "name": "barberflow-ai-service",
+  "version": "1.0.0",
+  "description": "BarberFlow AI - Machine Learning and AI Services",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py",
+    "dev": "python -m flask run --debug",
+    "test": "pytest",
+    "install": "pip install -r requirements.txt"
+  },
+  "keywords": ["ai", "machine-learning", "tensorflow", "flask", "barberflow"],
+  "author": "BarberFlow Team",
+  "license": "MIT"
+}

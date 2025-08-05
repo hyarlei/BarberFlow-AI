@@ -1,0 +1,117 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: barberflow-postgres
+    environment:
+      POSTGRES_DB: barberflow
+      POSTGRES_USER: barberflow_user
+      POSTGRES_PASSWORD: barberflow_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - barberflow-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: barberflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - barberflow-network
+
+  # Backend API (NestJS)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: barberflow-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://barberflow_user:barberflow_pass@postgres:5432/barberflow
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - barberflow-network
+    command: npm run start:dev
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: barberflow-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_key
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - barberflow-network
+    command: npm run dev
+
+  # AI Service (Python Flask/FastAPI)
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: barberflow-ai
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://barberflow_user:barberflow_pass@postgres:5432/barberflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./ai-service:/app
+    depends_on:
+      - postgres
+    networks:
+      - barberflow-network
+
+  # Chatbot Service
+  chatbot:
+    build:
+      context: ./chatbot
+      dockerfile: Dockerfile
+    container_name: barberflow-chatbot
+    environment:
+      NODE_ENV: development
+      API_URL: http://backend:3001
+      WHATSAPP_TOKEN: your_whatsapp_token
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./chatbot:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - barberflow-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  barberflow-network:
+    driver: bridge
