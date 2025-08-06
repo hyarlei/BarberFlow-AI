@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-poppins: 'Poppins', system-ui, -apple-system, sans-serif;
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -20,24 +15,14 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1f2937;
+  background-color: #f9fafb;
 }
 
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
 
 /* Custom scrollbar */
@@ -58,29 +43,31 @@ a {
   background: #a8a8a8;
 }
 
-/* Custom components */
-@layer components {
-  .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
-  }
+/* Hover Effects */
+a[href="/auth/register"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6) !important;
+}
 
-  .btn-secondary {
-    @apply bg-secondary-200 hover:bg-secondary-300 text-secondary-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
-  }
+a[href="/auth/login"]:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(212, 175, 55, 0.8) !important;
+}
 
-  .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
-  }
+/* Input focus styles */
+input:focus, select:focus {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3) !important;
+}
 
-  .card {
-    @apply bg-white rounded-lg shadow-md border border-gray-200;
-  }
+/* Button hover animations */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.5) !important;
+}
 
-  .gradient-bg {
-    @apply bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600;
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent;
-  }
+/* Social login buttons hover */
+button[type="button"]:hover {
+  background: rgba(212, 175, 55, 0.2) !important;
+  border-color: #d4af37 !important;
 }

@@ -1,0 +1,17 @@
+--ROTAS PRINCIPAIS PARA TESTE--
+🏠 Homepage & Navegação
+http://localhost:3000/
+
+🔐 Sistema de Autenticação
+http://localhost:3000/auth/login
+
+http://localhost:3000/auth/register
+
+👤 Dashboard do Cliente
+http://localhost:3000/dashboard/client
+
+✂️ Dashboard do Barbeiro
+http://localhost:3000/dashboard/barber
+
+Dashboard do Admin
+http://localhost:3000/dashboard/admin
