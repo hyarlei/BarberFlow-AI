@@ -15,7 +15,7 @@ Sistema completo de automação para barbearia moderna com Inteligência Artific
 
 ## 🚀 Estrutura do Projeto
 
-```
+```text
 BarberFlow-AI/
 ├── frontend/                 # Next.js App
 ├── backend/                  # NestJS API
@@ -29,6 +29,7 @@ BarberFlow-AI/
 ## 🔧 Configuração do Ambiente
 
 ### Pré-requisitos
+
 - Docker
 - Docker Compose
 - Node.js 18+
@@ -38,6 +39,7 @@ BarberFlow-AI/
 
 1. Clone o repositório
 2. Execute o ambiente de desenvolvimento:
+
 ```bash
 docker-compose up -d
 ```
@@ -45,11 +47,13 @@ docker-compose up -d
 ## 📋 Módulos e Funcionalidades
 
 ### Frontend - Painéis de Usuário
+
 - **Cliente**: Agendamento, perfil, histórico, pagamentos
 - **Barbeiro**: Agenda, portfólio, histórico de clientes
 - **Admin**: Dashboard, gestão, relatórios, PDV
 
 ### Backend - API RESTful
+
 - Autenticação e autorização
 - Gestão de usuários e perfis
 - Sistema de agendamentos
@@ -57,12 +61,14 @@ docker-compose up -d
 - Notificações automatizadas
 
 ### Agente de IA - "O Cérebro"
+
 - Análise preditiva de demanda
 - Marketing automatizado inteligente
 - Recomendações personalizadas
 - Análise de risco de evasão
 
 ### Chatbot - "O Atendente 24h"
+
 - Integração WhatsApp e Web
 - Agendamento automatizado
 - FAQs e suporte
