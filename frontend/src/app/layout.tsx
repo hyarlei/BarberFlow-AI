@@ -6,12 +6,16 @@ import { Providers } from './providers'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+  fallback: ['system-ui', 'arial'],
 })
 
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-poppins',
+  display: 'swap',
+  fallback: ['system-ui', 'arial'],
 })
 
 export const metadata = {
@@ -19,7 +23,11 @@ export const metadata = {
   description: 'Sistema completo de automação para barbearia moderna com Inteligência Artificial',
   keywords: 'barbearia, agendamento, IA, automação, barbeiro',
   authors: [{ name: 'BarberFlow Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
