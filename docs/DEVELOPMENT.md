@@ -30,21 +30,21 @@ chmod +x setup.sh
 
 #### Configuração Manual
 
-1.**Clone o repositório**
+1. **Clone o repositório**
 
 ```bash
 git clone <repository-url>
 cd BarberFlow-AI
 ```
 
-2.**Configure as variáveis de ambiente**
+1. **Configure as variáveis de ambiente**
 
 ```bash
 cp .env.example .env
 # Edite o arquivo .env conforme necessário
 ```
 
-3.**Inicie os serviços**
+1. **Inicie os serviços**
 
 ```bash
 docker-compose up -d
@@ -54,7 +54,7 @@ docker-compose up -d
 
 ### Visão Geral
 
-```
+```text
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │    Frontend     │    │     Backend     │    │   AI Service    │
 │   (Next.js)     │◄──►│    (NestJS)     │◄──►│   (Python)      │
@@ -111,7 +111,7 @@ docker-compose up -d
 
 ## 📂 Estrutura do Projeto
 
-```
+```text
 BarberFlow-AI/
 ├── frontend/                 # Aplicação Next.js
 │   ├── src/
@@ -174,7 +174,7 @@ docker-compose build backend
 docker-compose exec backend bash
 ```
 
-### Backend (NestJS)
+### Backend - Comandos Docker
 
 ```bash
 # Entrar no container
@@ -202,7 +202,7 @@ npm run test:e2e
 npm run test:cov
 ```
 
-### Frontend (Next.js)
+### Frontend - Comandos Docker
 
 ```bash
 # Entrar no container
@@ -221,7 +221,7 @@ npm run build
 npm run test
 ```
 
-### AI Service (Python)
+### AI Service - Comandos Docker
 
 ```bash
 # Entrar no container
@@ -470,14 +470,14 @@ docker-compose up -d
 
 #### Staging/Produção
 
-**Frontend (Vercel)**
+##### Frontend (Vercel)
 
 ```bash
 # Build automático via Git
 # Configurar variáveis de ambiente no painel da Vercel
 ```
 
-**Backend (Render.com)**
+##### Backend (Render.com)
 
 ```bash
 # Conectar repositório
@@ -485,7 +485,7 @@ docker-compose up -d
 # Deploy automático via Git
 ```
 
-**Banco de Dados**
+##### Banco de Dados
 
 - PostgreSQL na nuvem (Render, AWS RDS, etc.)
 - Migrations automáticas via CI/CD
@@ -520,7 +520,7 @@ docker-compose logs service-name
 docker-compose build service-name
 ```
 
-2. **Banco de dados não conecta**
+1. **Banco de dados não conecta**
 
 ```bash
 # Verificar se o PostgreSQL está rodando
@@ -531,7 +531,7 @@ docker-compose down -v
 docker-compose up -d
 ```
 
-3. **Dependências não instalam**
+1. **Dependências não instalam**
 
 ```bash
 # Limpar cache
