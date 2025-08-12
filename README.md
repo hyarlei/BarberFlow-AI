@@ -35,15 +35,6 @@ BarberFlow-AI/
 - Node.js 18+
 - Python 3.9+
 
-### Instalação
-
-1. Clone o repositório
-2. Execute o ambiente de desenvolvimento:
-
-```bash
-docker-compose up -d
-```
-
 ## 📋 Módulos e Funcionalidades
 
 ### Frontend - Painéis de Usuário
