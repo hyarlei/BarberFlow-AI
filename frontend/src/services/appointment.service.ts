@@ -13,7 +13,7 @@ export class AppointmentService {
     limit?: number
     status?: AppointmentStatus
     barberId?: string
-    clientId?: string
+    userId?: string
     dateFrom?: string
     dateTo?: string
   }): Promise<PaginatedResponse<Appointment>> {

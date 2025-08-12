@@ -146,6 +146,7 @@ model Payment {
   status          PaymentStatus @default(PENDING)
   transactionId   String?
   gatewayResponse Json?
+  metadata        Json?
   processedAt     DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -179,6 +180,9 @@ model Notification {
   type          NotificationType
   title         String
   message       String
+  content       String?
+  link          String?
+  metadata      Json?
   isRead        Boolean          @default(false)
   sentAt        DateTime?
   createdAt     DateTime         @default(now())

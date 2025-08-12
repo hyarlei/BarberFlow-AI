@@ -1,8 +1,39 @@
 "use client"
 
 import Link from 'next/link'
+import { useState } from 'react'
+import { useAuthContext } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { login } = useAuthContext()
+  const router = useRouter()
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    setErrorMessage('')
+    setIsSubmitting(true)
+
+    try {
+      const result = await login(email, password)
+      
+      if (result.success) {
+        router.push('/dashboard')
+      } else {
+        setErrorMessage(result.error || 'Falha ao fazer login. Verifique suas credenciais.')
+      }
+    } catch (error: any) {
+      console.error('Login error:', error)
+      setErrorMessage('Ocorreu um erro inesperado. Tente novamente mais tarde.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div style={{ 
       minHeight: '100vh', 
@@ -82,8 +113,24 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* Error Message */}
+        {errorMessage && (
+          <div style={{
+            background: 'rgba(220, 53, 69, 0.1)',
+            border: '1px solid rgba(220, 53, 69, 0.3)',
+            color: '#ff6b6b',
+            padding: '0.8rem',
+            borderRadius: '10px',
+            fontSize: '0.9rem',
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>
+            {errorMessage}
+          </div>
+        )}
+
         {/* Form */}
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} onSubmit={handleSubmit}>
           {/* Email Field */}
           <div>
             <label style={{ 
@@ -98,6 +145,9 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               style={{
                 width: '100%',
                 padding: '1rem',
@@ -126,6 +176,9 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               style={{
                 width: '100%',
                 padding: '1rem',
@@ -154,21 +207,28 @@ export default function LoginPage() {
           {/* Login Button */}
           <button
             type="submit"
+            disabled={isSubmitting}
             style={{
-              background: 'linear-gradient(45deg, #d4af37, #ffd700)',
+              background: isSubmitting 
+                ? 'rgba(212, 175, 55, 0.7)' 
+                : 'linear-gradient(45deg, #d4af37, #ffd700)',
               color: '#000',
               fontWeight: '700',
               padding: '1rem 2rem',
               borderRadius: '20px',
               fontSize: '1.1rem',
               border: 'none',
-              cursor: 'pointer',
+              cursor: isSubmitting ? 'default' : 'pointer',
               boxShadow: '0 8px 25px rgba(212, 175, 55, 0.4)',
               transition: 'all 0.3s ease',
-              marginTop: '1rem'
+              marginTop: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
             }}
           >
-            🚀 Entrar na Conta
+            {isSubmitting ? 'Entrando...' : '🚀 Entrar na Conta'}
           </button>
 
           {/* Divider */}

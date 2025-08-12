@@ -3,7 +3,19 @@
 import { Button, Card } from '@/components/ui'
 import Link from 'next/link'
 
+import { useAuthContext } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
+
 export default function ClientDashboard() {
+  const { user, logout } = useAuthContext()
+  const router = useRouter()
+  
+  // Função para lidar com o logout
+  const handleLogout = async () => {
+    await logout()
+    router.push('/auth/login')
+  }
+  
   return (
     <div style={{ 
       minHeight: '100vh', 
@@ -36,10 +48,8 @@ export default function ClientDashboard() {
           </Link>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ color: '#b0b0b0' }}>👋 Olá, Cliente!</span>
-            <Link href="/auth/login" style={{ textDecoration: 'none' }}>
-              <Button variant="outline" size="sm">Sair</Button>
-            </Link>
+            <span style={{ color: '#b0b0b0' }}>👋 Olá, {user?.profile?.firstName || 'Cliente'}!</span>
+            <Button variant="outline" size="sm" onClick={handleLogout}>Sair</Button>
           </div>
         </div>
       </header>
@@ -86,7 +96,12 @@ export default function ClientDashboard() {
               <p style={{ color: '#b0b0b0', marginBottom: '1.5rem' }}>
                 Agende seu próximo corte com IA que sugere o melhor horário
               </p>
-              <Button variant="primary">Agendar Agora</Button>
+              <Button 
+                variant="primary" 
+                onClick={() => router.push('/dashboard/client/appointments/new')}
+              >
+                Agendar Agora
+              </Button>
             </div>
           </Card>
 
@@ -107,7 +122,12 @@ export default function ClientDashboard() {
               <p style={{ color: '#b0b0b0', marginBottom: '1.5rem' }}>
                 Atualize suas informações e preferências pessoais
               </p>
-              <Button variant="secondary">Ver Perfil</Button>
+              <Button 
+                variant="secondary"
+                onClick={() => router.push('/dashboard/client/profile')}
+              >
+                Ver Perfil
+              </Button>
             </div>
           </Card>
 
@@ -128,7 +148,12 @@ export default function ClientDashboard() {
               <p style={{ color: '#b0b0b0', marginBottom: '1.5rem' }}>
                 Veja todos os seus agendamentos anteriores
               </p>
-              <Button variant="secondary">Ver Histórico</Button>
+              <Button 
+                variant="secondary"
+                onClick={() => router.push('/dashboard/client/history')}
+              >
+                Ver Histórico
+              </Button>
             </div>
           </Card>
         </div>
@@ -155,7 +180,12 @@ export default function ClientDashboard() {
               <p style={{ color: '#b0b0b0', marginBottom: '1.5rem' }}>
                 Que tal agendar seu próximo corte?
               </p>
-              <Button variant="primary">Fazer Agendamento</Button>
+              <Button 
+                variant="primary"
+                onClick={() => router.push('/dashboard/client/appointments/new')}
+              >
+                Fazer Agendamento
+              </Button>
             </div>
           </Card>
         </div>
@@ -182,7 +212,12 @@ export default function ClientDashboard() {
               <p style={{ color: '#b0b0b0', marginBottom: '1.5rem' }}>
                 Seus pagamentos aparecerão aqui após os agendamentos
               </p>
-              <Button variant="secondary">Ver Detalhes</Button>
+              <Button 
+                variant="secondary"
+                onClick={() => router.push('/dashboard/client/payments')}
+              >
+                Ver Detalhes
+              </Button>
             </div>
           </Card>
         </div>

@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Base Types
 export interface User {
   id: string
@@ -51,6 +53,7 @@ export interface AuthResponse {
 
 // Service Types
 export interface Service {
+  map(arg0: (service: any) => React.JSX.Element): React.ReactNode;
   id: string
   name: string
   description: string
@@ -63,20 +66,37 @@ export interface Service {
 }
 
 // Appointment Types
+export interface AppointmentUser {
+  id: string
+  appointmentId: string
+  userId: string
+  user: {
+    id: string
+    email: string
+    profile: UserProfile
+  }
+}
+
 export interface Appointment {
   id: string
-  clientId: string
   barberId: string
-  serviceIds: string[]
+  serviceId: string
   scheduledFor: string
-  status: AppointmentStatus
+  duration: number
   totalPrice: number
   notes?: string
+  status: AppointmentStatus
   createdAt: string
   updatedAt: string
-  client: User
-  barber: User
-  services: Service[]
+  completedAt?: string
+  cancelledAt?: string
+  cancelReason?: string
+  users: AppointmentUser[]
+  barber: {
+    id: string
+    profile: UserProfile
+  }
+  service: Service
   payment?: Payment
 }
 
@@ -92,13 +112,19 @@ export enum AppointmentStatus {
 // Payment Types
 export interface Payment {
   id: string
-  appointmentId: string
+  userId: string
+  appointmentId?: string
   amount: number
   method: PaymentMethod
   status: PaymentStatus
+  transactionId?: string
+  gatewayResponse?: Record<string, any>
+  metadata?: Record<string, any>
   processedAt?: string
   createdAt: string
   updatedAt: string
+  appointment?: Appointment
+  user?: User
 }
 
 export enum PaymentMethod {
@@ -217,22 +243,25 @@ export interface UpdateProfileForm {
 export interface Notification {
   id: string
   userId: string
+  appointmentId?: string
   type: NotificationType
   title: string
   message: string
+  content?: string
+  link?: string
+  metadata?: Record<string, any>
   isRead: boolean
-  data?: Record<string, any>
+  sentAt?: string
   createdAt: string
+  user?: User
+  appointment?: Appointment
 }
 
 export enum NotificationType {
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
-  APPOINTMENT_CONFIRMED = 'APPOINTMENT_CONFIRMED',
-  APPOINTMENT_CANCELLED = 'APPOINTMENT_CANCELLED',
-  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
-  REVIEW_RECEIVED = 'REVIEW_RECEIVED',
-  PROMOTION = 'PROMOTION',
-  SYSTEM = 'SYSTEM'
+  EMAIL = 'EMAIL',
+  SMS = 'SMS',
+  WHATSAPP = 'WHATSAPP',
+  PUSH = 'PUSH'
 }
 
 // Component Props Types
